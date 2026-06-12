@@ -2,15 +2,21 @@
 
 case "$(board_name)" in
 	glinet,gl-mt3600be)
-		sed -i "s#^root:[^:]*:#root:\$6\$ClfQD9odfexwz389\$ScsAKvFOlDWEmFuvIexqmA4F3lPaIFAPYYoTXy/lvSqM2sI/KIcfObrkTmJtsXc4OyoBBi1VO/w5QKZQJ06nv0:#" /etc/shadow
+		# root: locked (login via admin user only)
+		passwd -l root
 
-		suffix="$(tr -dc 'a-z0-9' </dev/urandom | dd bs=1 count=6 2>/dev/null)"
-		[ -n "$suffix" ] || suffix="guest01"
+		# admin: uid 0 root-equivalent alias, password 'admin'
+		grep -q '^admin:' /etc/passwd || echo 'admin:x:0:0:admin:/root:/bin/ash' >> /etc/passwd
+		grep -q '^admin:' /etc/shadow || echo 'admin:$6$9WSg/m6PIm5UiqJg$de9kd97zF0Sq3UroAHtH/gB35bLtJlkUArU27Ya2vF2H8WDSz4Jl503husd2wBipeJKRQmU46Sg9EgZSKrwH/1::0:99999:7:::' >> /etc/shadow
+
+		# derive suffix from last 4 hex digits of label MAC (eth0 = gmac0)
+		suffix="$(cat /sys/class/net/eth0/address 2>/dev/null | tr -d ':' | tr 'a-z' 'A-Z' | cut -c9-12)"
+		[ ${#suffix} -eq 4 ] || suffix="0000"
 
 		uci -q set wireless.default_radio0.disabled='0'
 		uci -q set wireless.default_radio1.disabled='0'
-		uci -q set wireless.default_radio0.ssid="OpenWrt-${suffix}"
-		uci -q set wireless.default_radio1.ssid="OpenWrt-${suffix}-5G"
+		uci -q set wireless.default_radio0.ssid="GL-MT3600BE-${suffix}"
+		uci -q set wireless.default_radio1.ssid="GL-MT3600BE-${suffix}-5G"
 		uci -q set wireless.default_radio0.encryption='psk2'
 		uci -q set wireless.default_radio1.encryption='psk2'
 		uci -q set wireless.default_radio0.key='88888888'
@@ -20,7 +26,7 @@ case "$(board_name)" in
 		uci -q set wireless.guest_radio0.device='radio0'
 		uci -q set wireless.guest_radio0.mode='ap'
 		uci -q set wireless.guest_radio0.network='guest'
-		uci -q set wireless.guest_radio0.ssid="OpenWrt-${suffix}-Guest"
+		uci -q set wireless.guest_radio0.ssid="GL-MT3600BE-${suffix}-Guest"
 		uci -q set wireless.guest_radio0.encryption='psk2'
 		uci -q set wireless.guest_radio0.key='88888888'
 		uci -q set wireless.guest_radio0.disabled='1'
@@ -29,7 +35,7 @@ case "$(board_name)" in
 		uci -q set wireless.guest_radio1.device='radio1'
 		uci -q set wireless.guest_radio1.mode='ap'
 		uci -q set wireless.guest_radio1.network='guest'
-		uci -q set wireless.guest_radio1.ssid="OpenWrt-${suffix}-Guest-5G"
+		uci -q set wireless.guest_radio1.ssid="GL-MT3600BE-${suffix}-Guest-5G"
 		uci -q set wireless.guest_radio1.encryption='psk2'
 		uci -q set wireless.guest_radio1.key='88888888'
 		uci -q set wireless.guest_radio1.disabled='1'
@@ -50,6 +56,9 @@ case "$(board_name)" in
 		uci -q set network.wan2.metric='30'
 		uci -q set network.wan2_6='interface'
 		uci -q set network.wan2_6.proto='none'
+
+		uci -q set network.lan.ipaddr='192.168.3.1'
+		uci -q set network.lan.netmask='255.255.255.0'
 		uci commit network
 
 		uci -q set dhcp.guest='dhcp'
@@ -87,6 +96,22 @@ case "$(board_name)" in
 
 		uci -q del_list firewall.@zone[1].network='wan2'
 		uci -q add_list firewall.@zone[1].network='wan2'
+
+		uci -q set firewall.openclash='rule'
+		uci -q set firewall.openclash.name='Allow-OpenClash'
+		uci -q set firewall.openclash.src='wan'
+		uci -q set firewall.openclash.dest_port='7874 7890 7891 7892 7893 7895 9090'
+		uci -q set firewall.openclash.proto='tcp'
+		uci -q set firewall.openclash.family='any'
+		uci -q set firewall.openclash.target='ACCEPT'
+
+		uci -q set firewall.adguardhome='rule'
+		uci -q set firewall.adguardhome.name='Allow-AdGuardHome'
+		uci -q set firewall.adguardhome.src='wan'
+		uci -q set firewall.adguardhome.dest_port='3000'
+		uci -q set firewall.adguardhome.proto='tcp'
+		uci -q set firewall.adguardhome.family='any'
+		uci -q set firewall.adguardhome.target='ACCEPT'
 		uci commit firewall
 
 		uci -q set openclash.config.core_type='Meta'

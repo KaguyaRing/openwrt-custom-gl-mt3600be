@@ -2079,7 +2079,7 @@ define Device/glinet_gl-mt3600be
   DEVICE_DTC_FLAGS := --pad 4096
   DEVICE_DTS_LOADADDR := 0x4ff00000
   SUPPORTED_DEVICES += glinet,gl-mt3600be
-  DEVICE_PACKAGES := mt7987-2p5g-phy-firmware kmod-mt7990-firmware kmod-hwmon-pwmfan luci opkg luci-theme-argon luci-i18n-base-zh-cn luci-i18n-package-manager-zh-cn luci-i18n-firewall-zh-cn nftables-json luci-app-openclash luci-lua-runtime luci-compat luci-lib-ipkg lua adguardhome kmod-usb3 kmod-usb-xhci-mtk kmod-usb-storage kmod-usb-storage-uas block-mount kmod-fs-ext4 kmod-fs-vfat kmod-nls-cp437 kmod-nls-iso8859-1 kmod-usb-net kmod-usb-net-rndis kmod-usb-net-cdc-ether kmod-usb-net-cdc-ncm kmod-usb-net-cdc-mbim kmod-usb-net-qmi-wwan kmod-usb-net-huawei-cdc-ncm kmod-usb-wdm kmod-usb-serial kmod-usb-serial-wwan kmod-usb-serial-option umbim uqmi comgt comgt-ncm usb-modeswitch
+  DEVICE_PACKAGES := mt7987-2p5g-phy-firmware kmod-mt7990-firmware kmod-hwmon-pwmfan luci opkg luci-theme-argon luci-i18n-base-zh-cn luci-i18n-package-manager-zh-cn luci-i18n-firewall-zh-cn nftables-json luci-app-openclash openclash-core luci-lua-runtime luci-compat luci-lib-ipkg lua adguardhome kmod-usb3 kmod-usb-xhci-mtk kmod-usb-storage kmod-usb-storage-uas block-mount kmod-fs-ext4 kmod-fs-vfat kmod-nls-cp437 kmod-nls-iso8859-1 kmod-usb-net kmod-usb-net-rndis kmod-usb-net-cdc-ether kmod-usb-net-cdc-ncm kmod-usb-net-cdc-mbim kmod-usb-net-qmi-wwan kmod-usb-net-huawei-cdc-ncm kmod-usb-wdm kmod-usb-serial kmod-usb-serial-wwan kmod-usb-serial-option umbim uqmi comgt comgt-ncm usb-modeswitch
   UBINIZE_OPTS := -E 5
   BLOCKSIZE := 128k
   PAGESIZE := 2048

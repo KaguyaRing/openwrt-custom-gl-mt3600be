@@ -7,23 +7,24 @@
 
 </div>
 
-# openwrt-snapshot-gl-mt3600be
+# openwrt-custom-gl-mt3600be
 
-这是一个基于官方 OpenWrt Snapshot 的 Fork分支,正如仓库所名,此仓库适配了 `GL-MT3600BE`设备。
+这是一个基于官方 OpenWrt Snapshot 的定制分支，专为 `GL-MT3600BE` 设备适配，在主线基础上集成了常用软件包与开箱即用的设备默认配置。
 
 ## 当前状态
 
 - 目标设备: `GL.iNet GL-MT3600BE`
 - 目标平台: `mediatek/filogic`
 - 固件产物: `openwrt-mediatek-filogic-glinet_gl-mt3600be-squashfs-sysupgrade.bin`
+- 管理地址: `http://192.168.3.1`
 - 已验证: 启动、双频 Wi-Fi、LuCI、风扇、AdGuardHome、OpenClash
 
 ## 当前构建固件集成包
 
-- LuCI + Argon 主题
+- LuCI + Argon 主题 `2.4.3`
 - `opkg` 与 `apk`
-- OpenClash (Meta/Mihomo)(需自行下载内核)
-- AdGuardHome(默认运行在 `http://192.168.1.1:3000`,具体以实际路由器IP地址为准)
+- OpenClash `v0.47.055` (Meta/Mihomo `v1.19.27` – 内核已预置，开箱即用)
+- AdGuardHome(默认运行在 `http://192.168.3.1:3000`,具体以实际路由器IP地址为准)
 
 - 常用中文包:
   - `luci-i18n-base-zh-cn`
@@ -32,13 +33,19 @@
 
 ## 默认配置 (首次启动)
 
-- LuCI 账号: `root`
-- LuCI 密码: `admin`
-- 2.4G SSID: `OpenWrt-<随机6位字母数字>`
-- 5G SSID: `OpenWrt-<随机6位字母数字>-5G`
+- **管理地址**: `http://192.168.3.1`
+- **唯一可登录用户** — 用户名: `admin` / 密码: `admin`（等效 root 权限，uid 0）
+- **`root` 账号** — 已锁定（无法登录）；请使用 `admin` 用户登录 LuCI 和 SSH
+  - 如需解锁 root：以 `admin` SSH 登录后执行 `passwd -u root && passwd root` 设置密码即可
+- **WAN 侧已放通端口**:
+  - OpenClash: `7874`, `7890-7893`, `7895`, `9090` (TCP)
+  - AdGuardHome: `3000` (TCP)
+- **OpenClash 面板**: `http://192.168.3.1:9090` (密钥由 OpenClash 首次运行时自动生成)
+- 2.4G SSID: `GL-MT3600BE-<MAC末4位>`
+- 5G SSID: `GL-MT3600BE-<MAC末4位>-5G`
 - Wi-Fi 密码: `88888888`
 - 访客网段预留: `192.168.4.1/24`（默认关闭）
-- 访客 SSID 预留: `OpenWrt-<同主WiFi随机串>-Guest` / `OpenWrt-<同主WiFi随机串>-Guest-5G`（默认关闭）
+- 访客 SSID 预留: `GL-MT3600BE-<MAC末4位>-Guest` / `GL-MT3600BE-<MAC末4位>-Guest-5G`（默认关闭）
 - `wan2` 预置: `DHCP`，`metric=30`，默认不绑定设备（可在 LuCI 中手动选择 USB 网卡/USB 共享接口）
 - `wan2_6` 预置: `proto=none`（未配置）
 
@@ -60,8 +67,8 @@ sudo apt install build-essential libncurses5-dev gawk git libssl-dev zlib1g-dev 
 
 然后，克隆仓库并开始编译：
 ```bash
-git clone https://github.com/ChuranNeko/openwrt-snapshot-gl-mt3600be
-cd openwrt-snapshot-gl-mt3600be
+git clone https://github.com/ChuranNeko/openwrt-custom-gl-mt3600be
+cd openwrt-custom-gl-mt3600be
 ./scripts/feeds update -a
 ./scripts/feeds install -a
 make defconfig
@@ -74,7 +81,7 @@ make -j$(nproc)
 
 > 如你需要在编译时加入其他可选包，请先运行 `make menuconfig` 配置后再编译。
 
-[已构建固件下载](https://github.com/ChuranNeko/openwrt-snapshot-gl-mt3600be/releases/latest)
+[已构建固件下载](https://github.com/ChuranNeko/openwrt-custom-gl-mt3600be/releases/latest)
 
 ## 刷机方法
 
@@ -126,7 +133,7 @@ ssh root@<路由器ip> 'sysupgrade -n /tmp/openwrt-mediatek-filogic-glinet_gl-mt
 
 ## 已知事项
 
-- OpenClash 仅预置前端与配置，Meta 内核二进制通常需要首次进入后下载。
+- OpenClash Meta（mihomo）内核已预置；GeoIP/GeoSite/Country 数据库由 OpenClash 首次运行时自动更新（通过 jsDelivr CDN，国内通常可访问）。
 - USB 设备不枚举时，优先检查电源规格与线材，建议使用足功率适配器。
 - 本Openwrt版本不支持 `iStore` 的安装，因为 `iStore` 的最高支持是在 Openwrt `24.10`。
 
