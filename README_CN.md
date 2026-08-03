@@ -67,7 +67,7 @@ sudo apt install build-essential libncurses5-dev gawk git libssl-dev zlib1g-dev 
 
 然后，克隆仓库并开始编译：
 ```bash
-git clone https://github.com/CoreRing/openwrt-custom-gl-mt3600be
+git clone https://github.com/KaguyaRing/openwrt-custom-gl-mt3600be
 cd openwrt-custom-gl-mt3600be
 ./scripts/feeds update -a
 ./scripts/feeds install -a
@@ -81,7 +81,7 @@ make -j$(nproc)
 
 > 如你需要在编译时加入其他可选包，请先运行 `make menuconfig` 配置后再编译。
 
-[已构建固件下载](https://github.com/CoreRing/openwrt-custom-gl-mt3600be/releases/latest)
+[已构建固件下载](https://github.com/KaguyaRing/openwrt-custom-gl-mt3600be/releases/latest)
 
 ## 刷机方法
 

@@ -64,7 +64,7 @@ sudo apt install build-essential libncurses5-dev gawk git libssl-dev zlib1g-dev 
 Then, clone the repository and start compiling:
 
 ```bash
-git clone https://github.com/CoreRing/openwrt-custom-gl-mt3600be
+git clone https://github.com/KaguyaRing/openwrt-custom-gl-mt3600be
 cd openwrt-custom-gl-mt3600be
 ./scripts/feeds update -a
 ./scripts/feeds install -a
@@ -79,7 +79,7 @@ After compilation, the firmware is located in `bin/targets/mediatek/filogic/`.
 
 > If you need to add other optional packages during compilation, please run `make menuconfig` to configure them before compiling.
 
-[Download the built firmware](https://github.com/CoreRing/openwrt-custom-gl-mt3600be/releases/latest)
+[Download the built firmware](https://github.com/KaguyaRing/openwrt-custom-gl-mt3600be/releases/latest)
 
 ## Flashing Methods
 
